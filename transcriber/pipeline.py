@@ -176,4 +176,6 @@ def transcribe_file(
     if not out_path.exists():
         out_path.write_text("", encoding="utf-8")
     log.info("결과 저장: %s (총 %s 소요)", out_path, _clock(time.time() - started))
+    if model is not None and (vram := model.vram_report()):
+        log.info(vram)
     return out_path

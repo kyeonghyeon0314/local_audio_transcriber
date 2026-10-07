@@ -68,8 +68,10 @@ class GemmaTranscriber:
         for name in cpu_modules:
             _run_embedding_on_cpu(self.model, name, model_id, self.input_device)
         self.model.eval()
+        self.use_cuda = use_cuda
         if use_cuda:
             log.info("모델 로딩 완료. GPU 메모리 사용량: %.1f GB", torch.cuda.memory_allocated(0) / 2**30)
+            torch.cuda.reset_peak_memory_stats(0)
         else:
             log.info("모델 로딩 완료.")
         self.max_new_tokens = int(cfg["transcription"].get("max_new_tokens", 768))
@@ -93,6 +95,20 @@ class GemmaTranscriber:
             bnb_4bit_use_double_quant=True,
             **common,
         )
+
+    def vram_report(self) -> str | None:
+        """전사 중 최대 VRAM 사용량. 전용 VRAM에 가까우면 Windows가 공유 GPU 메모리(시스템 RAM)로
+        넘겨 오류 없이 크게 느려지므로 경고를 붙인다. 모델 비교(E4B vs 12B) 시 참고용."""
+        if not self.use_cuda:
+            return None
+        torch = self.torch
+        total = torch.cuda.get_device_properties(0).total_memory / 2**30
+        peak = torch.cuda.max_memory_reserved(0) / 2**30
+        msg = f"최대 VRAM 사용량: {peak:.1f} / {total:.1f} GB"
+        if peak > total * 0.9:
+            msg += (" (주의: 전용 VRAM 한계에 가깝습니다. 작업 관리자에서 '공유 GPU 메모리'가 늘고 속도가 "
+                    "느려졌다면 config.yaml의 pdf.max_text_chars / pdf.max_images를 줄여 주세요)")
+        return msg
 
     def generate(self, content: list[dict]) -> str:
         torch = self.torch
