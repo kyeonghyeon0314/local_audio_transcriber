@@ -101,7 +101,7 @@ presentation.pdf ─→ 페이지 텍스트 추출 (+ 글자가 거의 없는 �
 ## 문제 해결
 
 - **모델을 불러오지 못했습니다**: Gemma 라이선스 동의와 `setup.bat`의 Hugging Face 로그인을 했는지 확인하세요. 다시 로그인하려면 `.venv\Scripts\hf.exe auth login`을 실행합니다.
-- **CUDA out of memory**: `config.yaml`에서 `max_gpu_memory`를 `6GiB`로 낮추세요.
+- **CUDA out of memory**: 다른 GPU 프로그램(게임, 브라우저 하드웨어 가속 등)을 닫고 다시 실행하세요. 4bit 모드에서는 모델의 레이어별 임베딩(PLE, 수 GB)만 CPU RAM에 두고 나머지는 GPU에 올리므로 RAM은 16GB 이상을 권장합니다.
 - **CUDA 사용 가능: False**: NVIDIA 드라이버를 최신으로 업데이트한 뒤 `setup.bat`을 다시 실행하세요.
 - 오류 상세 내용은 `output/logs/run_*.log`에 저장됩니다.
 
