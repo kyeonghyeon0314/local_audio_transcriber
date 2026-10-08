@@ -1,0 +1,10 @@
+# torch / torchvision 은 GPU(CUDA 12.8) 빌드를 setup.bat 에서 별도로 설치한다.
+transformers>=5.19
+accelerate>=1.10
+bitsandbytes>=0.46
+pymupdf>=1.24
+pillow>=10.0
+numpy>=1.26
+pyyaml>=6.0
+imageio-ffmpeg>=0.5
+sherpa-onnx>=1.12

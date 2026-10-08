@@ -1,0 +1,10 @@
+.venv/
+models/
+__pycache__/
+*.pyc
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep
+# 기준 전사(실제 회의 내용)는 커밋하지 않는다
+Gemini_answer*.txt

@@ -1,0 +1,51 @@
+# Local Multimodal Transcriber 설정
+# 일반적인 사용에서는 수정할 필요가 없습니다.
+
+# Hugging Face 모델 ID 또는 로컬 모델 폴더 경로
+model: google/gemma-4-E4B-it
+
+# 4bit | 8bit | none  (RTX 5060 8GB 기준 4bit 권장)
+quantization: 4bit
+# auto | cuda | cpu
+device: auto
+# quantization: none 일 때만 사용. GPU에 올릴 최대 메모리 (넘치는 부분은 CPU RAM으로 offload)
+max_gpu_memory: 7GiB
+
+output:
+  format: txt
+  timestamp: true
+  # 완료 후 output 폴더 자동 열기 (Windows)
+  open_folder: true
+
+audio:
+  # 구간 길이(초). Gemma 4 오디오 입력은 구간당 최대 30초
+  chunk_length: 25
+  # 인접 구간 겹침(초)
+  overlap: 5
+  # 거의 무음인 구간은 모델 호출 생략
+  skip_silence: true
+
+diarization:
+  # 화자 구분 보조 모델(CPU)로 "누가 언제 말했는지"를 먼저 나누고, 화자 턴별 원본 오디오를 Gemma가 전사
+  # false면 25초 구간 방식으로 Gemma만 사용 (화자 구분이 거의 안 됨)
+  enabled: true
+  # 화자 수를 알면 지정 (0 = 자동)
+  num_speakers: 0
+  # 자동일 때 같은 화자로 볼 기준. 화자가 실제보다 많이 나오면 올리고, 적게 나오면 낮추세요
+  threshold: 0.7
+
+pdf:
+  # auto: 텍스트 추출 + 텍스트가 거의 없는 페이지(그림/스캔)는 이미지로 전달
+  # text | images | off
+  mode: auto
+  max_text_chars: 12000
+  max_images: 8
+  image_dpi: 100
+
+transcription:
+  preserve_language: true
+  speaker_labels: true
+  acoustic_events: true
+  # 다음 구간에 전달할 이전 전사 줄 수 (화자 번호 일관성 유지용)
+  context_lines: 8
+  max_new_tokens: 768
